@@ -16,6 +16,6 @@ public class App extends TGBot {
   @Command("square")
   String authorCommand(int a, int b) {
 
-    return a + b + "";
+    return a * b + "";
   }
 }
