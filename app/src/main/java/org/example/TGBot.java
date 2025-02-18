@@ -7,8 +7,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
@@ -36,7 +38,9 @@ public abstract class TGBot {
 
     try {
 
-      String ans = toAnswer(msg);
+      String ans;
+      if (msg.text.equals("/help")) ans = getHelpMessage();
+      else ans = toAnswer(msg);
       SendMessage smsg = SendMessage.builder().chatId(msg.chat_id).text(ans).build();
       telegramClient.execute(smsg);
 
@@ -129,6 +133,39 @@ public abstract class TGBot {
     } catch (TelegramApiException e) {
       e.printStackTrace();
     }
+  }
+
+  static String getHelpMessage() {
+    var body =
+        handlers.entrySet().stream()
+            .map(TGBot::commandMethodFormatter)
+            .collect(Collectors.joining("\n"));
+    var header = "Доступные методы: \n";
+
+    return header + body;
+  }
+
+  static String commandMethodFormatter(Entry<String, Method> entry) {
+
+    var commandName = entry.getKey();
+    var args = entry.getValue().getParameterTypes();
+
+    Map<Class<?>, String> mappers =
+        Map.of(
+            String.class, "строка",
+            Long.class, "число",
+            Integer.class, "число",
+            long.class, "число",
+            int.class, "число",
+            Float.class, "дробное число",
+            Double.class, "дробное число",
+            float.class, "дробное число",
+            double.class, "дробное число");
+
+    var argsDescription =
+        Stream.of(args).map(mappers::get).map(n -> "<" + n + ">").collect(Collectors.joining(" "));
+
+    return "/" + commandName + " " + argsDescription;
   }
 
   static class Bot implements LongPollingSingleThreadUpdateConsumer {
