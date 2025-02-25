@@ -26,13 +26,8 @@ public class App extends TGBot {
     return ((letter + "  ").repeat(a) + "\n").repeat(b);
   }
 
-  @Command("sumArray")
-  String sumArray(String a, int b) {
-    return a + b + "";
-  }
-
   @Command("play")
-  String sumArray() {
+  String playSomeSound() {
     playSound("beep-02.wav");
 
     return "played";
