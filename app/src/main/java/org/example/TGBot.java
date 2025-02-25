@@ -102,6 +102,7 @@ public abstract class TGBot {
   }
 
   protected static void start() {
+    System.setProperty("file.encoding", "UTF-8");
 
     StackWalker.StackFrame caller =
         StackWalker.getInstance().walk(frames -> frames.skip(1).findFirst()).get();
@@ -189,7 +190,7 @@ public abstract class TGBot {
 
           // Выводим информацию о сообщении
           System.out.println(userName + " say " + text);
-          con.accept(new Msg(userName, message.getChatId(), text));
+          con.accept((new Msg(userName, message.getChatId(), text)));
         }
       }
     }

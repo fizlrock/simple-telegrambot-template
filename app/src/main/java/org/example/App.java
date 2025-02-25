@@ -33,7 +33,7 @@ public class App extends TGBot {
 
   @Command("play")
   String sumArray() {
-    playSound("meme.wav");
+    playSound("beep-02.wav");
 
     return "played";
   }
